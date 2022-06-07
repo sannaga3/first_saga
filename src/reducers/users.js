@@ -10,6 +10,12 @@ export default function usersReducer(state = initialState, action) {
         items: action.payload,
       };
     }
+    case Types.CREATE_USER_SUCCESS: {
+      return {
+        ...state,
+        items: [...state.items, action.payload],
+      };
+    }
     default:
       return state;
   }

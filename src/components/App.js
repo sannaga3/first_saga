@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { getUsersRequest } from "../actions/users";
 import { UserList } from "./users/UserList";
+import NewUserForm from "./users/NewUserForm";
 
 class App extends Component {
   // Appコンポーネント生成時に、getUsersRequestをpropsにセットする
@@ -15,7 +16,20 @@ class App extends Component {
     const users = this.props.users;
 
     return (
-      <div>{users.items.length > 0 && <UserList users={users.items} />}</div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <NewUserForm />
+        <div style={{ margin: "10px" }}>
+          <h1>UserList</h1>
+        </div>
+        <div>{users.items.length > 0 && <UserList users={users.items} />}</div>
+      </div>
     );
   }
 }
