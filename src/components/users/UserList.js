@@ -1,6 +1,8 @@
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { deleteUserRequest } from "../../actions/users";
 
 export const UserList = () => {
+  const dispatch = useDispatch();
   // useSelectorはselectorの返り値が変更される度に再レンダリングされる
   // 返り値が同じでもキャッシュで前回との比較が行われ、ネストしているほど計算に時間がかかる
   // useSelectorを複数併用している場合は、dispatchで何処かのselectorが変更されると全てに再計算が起きる
@@ -9,6 +11,7 @@ export const UserList = () => {
   const users = useSelector((state) => state.users.items, shallowEqual);
 
   const sort = () => {
+    // アルファベット昇順 大文字 > 小文字
     users.sort((a, b) => {
       if (a.firstName > b.firstName) {
         return 1;
@@ -25,6 +28,10 @@ export const UserList = () => {
   };
   if (users.length >= 2) sort();
 
+  const deleteUser = (userId) => {
+    dispatch(deleteUserRequest(userId));
+  };
+
   return (
     <>
       {users.map((user) => {
@@ -39,7 +46,7 @@ export const UserList = () => {
                   style={{ width: "200px" }}
                 >{`${user.firstName} ${user.lastName}`}</div>
                 <div>
-                  <button>delete</button>
+                  <button onClick={() => deleteUser(user.id)}>delete</button>
                 </div>
               </>
             )}

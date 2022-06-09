@@ -5,6 +5,7 @@ import {
   put,
   select,
   takeLatest,
+  take,
 } from "redux-saga/effects";
 import * as actions from "../actions/users";
 import * as api from "../api/user";
@@ -40,7 +41,7 @@ function* createUser({ payload }) {
       })
     );
     const state = yield select();
-    console.log("getUser", state);
+    console.log("createdUser", state.users.items);
     // const items = yield call(getUsers); // 新規作成分を取得できなかった為、上記のputエフェクトでディスパッチする形で代替
     // console.log("items", items);
   } catch (e) {}
@@ -50,8 +51,35 @@ function* watchCreateUserRequest() {
   yield takeLatest(actions.Types.CREATE_USER_REQUEST, createUser);
 }
 
+function* deleteUser(userId) {
+  try {
+    const result = yield call(api.deleteUser, userId);
+    yield put(
+      actions.deleteUserSuccess({
+        // item: result.data,    // REM REST APIの返り値がnullの為、叩いても無意味。userIdを直接渡してreducer内でuserを削除する
+        userId: userId,
+      })
+    );
+    const state = yield select();
+    console.log("deletedUser", state.users.items);
+    // const items = yield call(getUsers); // deleteした分が減らない為、上記のputエフェクトでディスパッチする形で代替
+    // console.log("items", items);
+  } catch (e) {}
+}
+
+function* watchDeleteUserRequest() {
+  while (true) {
+    const action = yield take(actions.Types.DELETE_USER_REQUEST); // deleteUserRequestアクションを監視し、payloadを引数として扱いたい
+    yield call(deleteUser, action.payload);
+  }
+}
+
 // watchGetUsersをrootSagaと並列処理する為にforkする。exportした各sagaはrootSagaで一括してforkする
-const userSagas = [fork(watchGetUsersRequest), fork(watchCreateUserRequest)];
+const userSagas = [
+  fork(watchGetUsersRequest),
+  fork(watchCreateUserRequest),
+  fork(watchDeleteUserRequest),
+];
 // 以下は個別でforkする方法
 // function* userSagas() {
 //   yield fork(watchGetUsersRequest);
@@ -60,10 +88,10 @@ const userSagas = [fork(watchGetUsersRequest), fork(watchCreateUserRequest)];
 export default userSagas;
 
 // saga-effectsについて
-// takeEvery  dispatchを監視し、dispatchのタイミングで任意の処理を実行する
+// takeEvery  sagaアクションのdispatchを監視し、dispatchのタイミングで任意の処理を実行する
 // takeLatest takeEveryと同じだが、タスク終了前に同じタスクが起動した場合は、前のタスクがキャンセルされる
 // call       promiseを生成し、その処理が終わるのを待つ。apiを叩くときに用いる
 // fork       非同期処理を行う。複数のジェネレータ関数を並列で処理するのに用いる。メインのジェネレータからプロセスをforkで分岐していく
 //            rootSagaがメインプロセスとして動作し、全てのwatcherがrootSagaから分岐している。
 //            fork1 -> getUser, fork2 -> deleteUser, fork3 -> createUser といった感じで並列でアクションの監視を行う
-// put        actionをdispatchする。順番に複数のstateを更新することが可能
+// put        actionをreducerにdispatchする。順番に複数のstateを更新することが可能

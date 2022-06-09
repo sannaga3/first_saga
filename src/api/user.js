@@ -9,3 +9,7 @@ export const getUsers = () => {
 export const createUser = ({ firstName, lastName }) => {
   return axios.post("/users", { firstName, lastName }); // リクエストを投げるとREM REST APIがインスタンスを新規作成するが、id:26 が毎回作成される？
 };
+
+export const deleteUser = (userId) => {
+  return axios.delete(`/users/${userId}`);
+};
