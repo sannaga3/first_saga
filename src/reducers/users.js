@@ -1,6 +1,6 @@
 import { Types } from "../actions/users";
 
-const initialState = { items: [] };
+const initialState = { items: [], error: "" };
 
 export default function usersReducer(state = initialState, action) {
   switch (action.type) {
@@ -24,6 +24,13 @@ export default function usersReducer(state = initialState, action) {
       return {
         ...state,
         items: deleted,
+      };
+    }
+    case Types.USERS_ERROR: {
+      console.log(action.payload);
+      return {
+        ...state,
+        error: action.payload,
       };
     }
     default:

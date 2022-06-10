@@ -5,6 +5,7 @@ export const Types = {
   CREATE_USER_SUCCESS: "users/create_user_success",
   DELETE_USER_REQUEST: "users/delete_user_request",
   DELETE_USER_SUCCESS: "users/delete_user_success",
+  USERS_ERROR: "users/user_error",
 };
 
 // sagaのwatcher用アクション
@@ -40,4 +41,9 @@ export const deleteUserRequest = (userId) => ({
 export const deleteUserSuccess = ({ userId }) => ({
   type: Types.DELETE_USER_SUCCESS,
   payload: userId,
+});
+
+export const usersError = ({ error }) => ({
+  type: Types.USERS_ERROR,
+  payload: { error },
 });

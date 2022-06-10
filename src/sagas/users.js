@@ -21,7 +21,11 @@ function* getUsers() {
     );
     const state = yield select();
     console.log("getUser", state);
-  } catch (e) {}
+  } catch (e) {
+    actions.usersError({
+      error: "error occured. Get users failed",
+    });
+  }
 }
 
 // takeEveryで常にdispatchを監視しactions.Types.GET_USERS_REQUESTがconnect?された時にgetUsers関数を実行する。ジェネレータ内部でwhile(true)が働いている。
@@ -44,7 +48,13 @@ function* createUser({ payload }) {
     console.log("createdUser", state.users.items);
     // const items = yield call(getUsers); // 新規作成分を取得できなかった為、上記のputエフェクトでディスパッチする形で代替
     // console.log("items", items);
-  } catch (e) {}
+  } catch (e) {
+    yield put(
+      actions.usersError({
+        error: "error occured. Create user failed",
+      })
+    );
+  }
 }
 
 function* watchCreateUserRequest() {
@@ -64,7 +74,13 @@ function* deleteUser(userId) {
     console.log("deletedUser", state.users.items);
     // const items = yield call(getUsers); // deleteした分が減らない為、上記のputエフェクトでディスパッチする形で代替
     // console.log("items", items);
-  } catch (e) {}
+  } catch (e) {
+    yield put(
+      actions.usersError({
+        error: "error occured. Delete user failed",
+      })
+    );
+  }
 }
 
 function* watchDeleteUserRequest() {
